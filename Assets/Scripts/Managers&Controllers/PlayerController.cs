@@ -29,17 +29,16 @@ public class PlayerController : MonoBehaviour {
 	
 	void Update () {
 
+
 	}
 	
 	void FixedUpdate(){
 		_movementVector = Vector2.zero;
-
 		ProcessMovement();	
-		if(!isGrounded){
-			ApplyGravity();
-		}
+		
 		CheckGround();
-		ExecuteVector();		
+		
+		ExecuteVector();	
 	}
 	
 	void ProcessMovement(){
@@ -59,13 +58,6 @@ public class PlayerController : MonoBehaviour {
 		} else {
 			isJumping = false;
 		}
-	}
-	
-	
-	void ApplyGravity(){
-		Vector2 v = _movementVector;
-		_movementVector = new Vector2(	v.x, 
-									 	v.y - (gravity * Time.deltaTime));
 	}
 	
 	void CheckGround(){
@@ -102,7 +94,6 @@ public class PlayerController : MonoBehaviour {
 	}
 	
 	void Jump(){
-		Vector2 v = _movementVector;
-		_movementVector = new Vector2(v.x, v.y + (jumpHeight));
+		rigidbody2D.AddForce(Vector2.up * jumpHeight * 200);
 	}
 }
