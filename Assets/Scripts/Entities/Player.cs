@@ -7,7 +7,8 @@ public class Player : Character {
 	
 	protected float _axis;
 	
-	void Start(){
+	protected override void Start(){
+		base.Start();
 		Spawn();
 	}
 	
@@ -16,7 +17,16 @@ public class Player : Character {
 		_movementVector = Vector2.zero;
 		ProcessMovement();	
 		
-		base.FixedUpdate();
+		CheckFront();
+		CheckBack();
+		
+		_rightGroundCheck = CheckGround (transform.localScale.x*0.45f);
+		_leftGroundCheck = CheckGround (transform.localScale.x*-0.45f);
+		if(_rightGroundCheck || _leftGroundCheck){
+			_isGrounded = true;
+		} else {
+			_isGrounded = false;
+		}
 		ExecuteVector();	
 	}
 	
@@ -25,33 +35,18 @@ public class Player : Character {
 		
 		if(_axis > 0.0f){
 			Move(DIR_RIGHT, moveSpeed);
-			_currentDirection = DIR_RIGHT;
 		} else if(_axis < 0.0f){
 			Move(DIR_LEFT, moveSpeed);
-			_currentDirection = DIR_LEFT;
 		}
 		
 		if(Input.GetAxis("Jump") > 0.0f){
-			if(isGrounded){
-				isJumping = true;
+			if(_isGrounded){
+				_isJumping = true;
 				Jump();
 			}
 		} else {
-			isJumping = false;
+			_isJumping = false;
 		}
 	}
 	
-	void ExecuteVector(){
-		Vector2 v = transform.position;
-		transform.position = new Vector2(v.x + _movementVector.x, v.y + _movementVector.y);
-	}
-	
-	public override void Move(int direction, float speed){
-		Vector2 v = _movementVector;
-		_movementVector = new Vector2(v.x + (speed * direction * Time.deltaTime), v.y);
-	}
-	
-	public override void Jump(){
-		rigidbody2D.AddForce(Vector2.up * jumpHeight * 200);
-	}
 }
