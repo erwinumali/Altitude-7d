@@ -5,7 +5,7 @@ using System.Collections;
 
 public class Character : MonoBehaviour {
 	
-	protected readonly float GROUND_TOL = 0.001f;
+	protected readonly float GROUND_TOL = 0.1f;
 	protected readonly int DIR_LEFT = -1;
 	protected readonly int DIR_RIGHT = 1;
 
@@ -18,23 +18,18 @@ public class Character : MonoBehaviour {
 	
 	public bool isAlive = false;
 	
-	protected Bounds _objectBounds;
-	
-	protected bool isGrounded;
-	protected bool isJumping;
+	protected bool isGrounded = false;
+	protected bool isJumping = false;
 	
 	protected Vector2 _movementVector;
-	protected Vector2 _bottom;
 	
-	protected float _axis;
+	protected int _currentDirection;
 	
-	void Start(){
-		if(HPCurrent >= 0){
-			HPCurrent = HPMax;
-		}
+	protected virtual void Start(){
+		_currentDirection = DIR_RIGHT;
 	}
 	
-	void Update(){
+	protected virtual void Update(){
 		if(HPCurrent >= HPMax){
 			HPCurrent = HPMax;
 		} else if(HPCurrent < 0){
@@ -42,13 +37,47 @@ public class Character : MonoBehaviour {
 		} 
 	}
 	
+	protected virtual void FixedUpdate(){
+		CheckFront();
+		CheckGround();
+	}
 	
-	void CheckGround(){
-		//_bottom = new Vector2(transform.position.x, transform.position.y - 0.);
-		RaycastHit2D res = Physics2D.Raycast(transform.position, -Vector2.up, float.PositiveInfinity, LayerMask.GetMask("Characters"));
+	public virtual void Spawn(){
+		if(HPCurrent >= 0){
+			HPCurrent = HPMax;
+		}
+	}
+	
+	public virtual void Move(int direction, float speed){
+		
+	}
+	
+	public virtual void Jump(){
+		
+	}
+	
+	protected void CheckFront(){
+		RaycastHit2D[] res = Physics2D.RaycastAll(transform.position, transform.TransformDirection(Vector2.right * _currentDirection), 10.0f);
+		foreach(RaycastHit2D col in res){
+			if(col.collider != null && col.collider != this.collider2D){
+				Debug.DrawLine(transform.position, col.point, Color.red);
+				//Debug.Log ("I hit " + col.collider.gameObject.name + " at the front");
+			}
+		}
+	}
+	
+	protected void CheckBack(){
+	
+
+	}
+	
+	protected void CheckGround(){
+		RaycastHit2D res = Physics2D.Raycast(transform.position, -Vector2.up, Mathf.Infinity, ~(1 << LayerMask.NameToLayer("Characters")));
 		if(res.collider != null){
-			Debug.DrawLine(_bottom, res.point, Color.blue);
-			float distance = Mathf.Abs(res.point.y - _bottom.y);
+			Debug.DrawLine(transform.position, res.point, Color.blue);
+			float distance = Mathf.Abs(res.point.y - transform.position.y);
+			
+			distance -= transform.localScale.y * 0.5f;
 			if(distance <= GROUND_TOL && !isJumping){
 				isGrounded = true;
 			} else {
@@ -58,15 +87,10 @@ public class Character : MonoBehaviour {
 		} else {
 			isGrounded = false;
 		}
+
 	}
 	
-	public virtual void Move(int direction, float speed){
-	
-	}
-	
-	public virtual void Jump(){
-	
-	}
+
 	
 	
 }

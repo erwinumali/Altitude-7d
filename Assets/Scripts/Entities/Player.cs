@@ -2,16 +2,21 @@
 using System.Collections;
 
 [RequireComponent (typeof (BoxCollider2D))]
-[RequireComponent (typeof (Rigidbody2D))]
 
 public class Player : Character {
 	
-	void FixedUpdate(){
+	protected float _axis;
+	
+	void Start(){
+		Spawn();
+	}
+	
+	
+	protected override void FixedUpdate(){
 		_movementVector = Vector2.zero;
 		ProcessMovement();	
 		
-		CheckGround();
-		
+		base.FixedUpdate();
 		ExecuteVector();	
 	}
 	
@@ -20,8 +25,10 @@ public class Player : Character {
 		
 		if(_axis > 0.0f){
 			Move(DIR_RIGHT, moveSpeed);
+			_currentDirection = DIR_RIGHT;
 		} else if(_axis < 0.0f){
 			Move(DIR_LEFT, moveSpeed);
+			_currentDirection = DIR_LEFT;
 		}
 		
 		if(Input.GetAxis("Jump") > 0.0f){
@@ -31,23 +38,6 @@ public class Player : Character {
 			}
 		} else {
 			isJumping = false;
-		}
-	}
-	
-	void CheckGround(){
-		_bottom = new Vector2(transform.position.x, transform.position.y - 0.9f);
-		RaycastHit2D res = Physics2D.Raycast(_bottom, -Vector2.up);
-		if(res.collider != null){
-			Debug.DrawLine(_bottom, res.point, Color.blue);
-			float distance = Mathf.Abs(res.point.y - _bottom.y);
-			if(distance <= GROUND_TOL && !isJumping){
-				isGrounded = true;
-			} else {
-				isGrounded = false;
-			}
-			
-		} else {
-			isGrounded = false;
 		}
 	}
 	
