@@ -6,8 +6,8 @@ using System.Collections;
 public class Character : MonoBehaviour {
 	
 	protected readonly float GROUND_TOL = 0.1f;
-	protected readonly int DIR_LEFT = -1;
-	protected readonly int DIR_RIGHT = 1;
+	protected readonly int DIR_BACK = -1;
+	protected readonly int DIR_FRONT = 1;
 
 	public int HPMax = 100;
 	public int HPCurrent;
@@ -17,9 +17,13 @@ public class Character : MonoBehaviour {
 	public float jumpHeight = 5.0f;
 	
 	public float frontSeekDistance = 20.0f;
-	public float backSeekDistance = 20.0f;
+	public float backSeekDistance = 10.0f;
 	
 	public bool isAlive = false;
+	
+	public LayerMask groundCheckIgnores = 0;
+	
+	public bool showDebugGizmos = true;
 	
 	protected bool _isGrounded = false;
 	protected bool _isJumping = false;
@@ -32,7 +36,9 @@ public class Character : MonoBehaviour {
 	protected int _currentDirection;
 	
 	protected virtual void Start(){
-		_currentDirection = DIR_RIGHT;
+		if(groundCheckIgnores == 0){
+			groundCheckIgnores = 1 << LayerMask.NameToLayer("Player");
+		}
 	}
 	
 	protected virtual void Update(){
@@ -63,6 +69,7 @@ public class Character : MonoBehaviour {
 	}
 	
 	public virtual void Spawn(){
+		_currentDirection = DIR_FRONT;
 		if(HPCurrent >= 0){
 			HPCurrent = HPMax;
 		}
@@ -84,44 +91,48 @@ public class Character : MonoBehaviour {
 		rigidbody2D.AddForce(Vector2.up * jumpHeight * 200);
 	}
 	
-	protected void CheckFront(){
-		CheckSide("front");
+	protected RaycastHit2D[] CheckFront(){
+		return CheckSide("front");
 	}
 	
-	protected void CheckBack(){
-		CheckSide("back");
+	protected RaycastHit2D[] CheckBack(){
+		return CheckSide("back");
 	}
 	
-	protected bool CheckSide(string side){
-		float sideModifier = 0;
-		float seekDistance = 0;
+	protected RaycastHit2D[] CheckSide(string side){
+		float sideModifier = 1.0f;
+		float seekDistance = frontSeekDistance;
 		if(side == "front"){
-			sideModifier = 1.0f;
-			seekDistance = frontSeekDistance;
+			if(_currentDirection == DIR_BACK){
+				sideModifier = -1.0f;
+				seekDistance = backSeekDistance;
+			}
 		} else if(side == "back"){
-			sideModifier = -1.0f;
-			seekDistance = backSeekDistance;
+			if(_currentDirection == DIR_FRONT){
+				sideModifier = -1.0f;
+				seekDistance = backSeekDistance;
+			}
 		} else {
 			Debug.LogError("Invalid string input for CheckSide!");
-			return false;
+			return null;
 		}
 		
 		RaycastHit2D[] res = 
-		Physics2D.RaycastAll(transform.position, transform.TransformDirection(Vector2.right * _currentDirection * sideModifier), seekDistance);
+		Physics2D.RaycastAll(transform.position, Vector2.right * _currentDirection * sideModifier, seekDistance);
 		if(res.Length > 1){
 			foreach(RaycastHit2D col in res){
 				if(col.collider != null && col.collider != this.collider2D){
-					Debug.DrawLine(transform.position, col.point, Color.red);
+					if(showDebugGizmos) Debug.DrawLine(transform.position, col.point, Color.red);
 					//Debug.Log ("I hit " + col.collider.gameObject.name + " at the " + side);
 				}
 			}		
 		} else {
-			Debug.DrawLine(	transform.position, 
-							new Vector3(transform.position.x + (seekDistance * _currentDirection * sideModifier), transform.position.y, transform.position.z),
+			if(showDebugGizmos) Debug.DrawLine(	transform.position, 
+							new Vector3(transform.position.x  + (seekDistance * _currentDirection * sideModifier), transform.position.y, transform.position.z),
 							Color.yellow); 
 		}
 		
-		return true;
+		return res;
 	}
 	
 	protected bool CheckGround(){
@@ -135,9 +146,9 @@ public class Character : MonoBehaviour {
 	protected bool CheckGround(float centerOffset, bool alterGroundedState){
 		bool retVal = false;
 		Vector2 castSource = new Vector2(transform.position.x + centerOffset, transform.position.y);
-		RaycastHit2D res = Physics2D.Raycast(castSource, -Vector2.up, Mathf.Infinity, ~(1 << LayerMask.NameToLayer("Characters")));
+		RaycastHit2D res = Physics2D.Raycast(castSource, -Vector2.up, Mathf.Infinity, ~(groundCheckIgnores));
 		if(res.collider != null){
-			Debug.DrawLine(castSource, res.point, Color.blue);
+			if(showDebugGizmos) Debug.DrawLine(castSource, res.point, Color.blue);
 			float distance = Mathf.Abs(res.point.y - transform.position.y);
 			distance -= transform.localScale.y * 0.5f;
 			if(distance <= GROUND_TOL && !_isJumping){

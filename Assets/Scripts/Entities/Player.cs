@@ -34,9 +34,9 @@ public class Player : Character {
 		_axis = Input.GetAxis("Horizontal");
 		
 		if(_axis > 0.0f){
-			Move(DIR_RIGHT, moveSpeed);
+			Move(DIR_FRONT, moveSpeed);
 		} else if(_axis < 0.0f){
-			Move(DIR_LEFT, moveSpeed);
+			Move(DIR_BACK, moveSpeed);
 		}
 		
 		if(Input.GetAxis("Jump") > 0.0f){
