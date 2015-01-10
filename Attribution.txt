@@ -1,0 +1,37 @@
+http://opengameart.org/content/tiny-pixeled-platform-astronaut 
+(CC-BY 3.0, "nicolas bougère: www.z-uo.com")
+
+http://opengameart.org/content/roguelike-sprites-redshrike-mods
+(CC-BY 3.0, "Stephen Challener (Redshrike) and a link back to OpenGameArt.org")
+
+http://opengameart.org/content/pixel-bot (CC-BY 3.0, "bostrt")
+
+http://opengameart.org/content/flying-tongue-monster-sprite-sheet (CC-BY 3.0, "dogchicken")
+
+http://opengameart.org/content/bullet-collection-1-m484 (CC0, "Master484")
+
+http://opengameart.org/content/game-icons (CC0)
+http://opengameart.org/content/kenney-fonts
+http://opengameart.org/content/ui-pack
+http://opengameart.org/content/ui-pack-space-extension
+http://opengameart.org/content/medals-2
+
+http://opengameart.org/content/minimal-industrial-tiles (CC0, "surt")
+http://opengameart.org/content/platformer-art-pixel-edition
+http://opengameart.org/content/platformer-art-deluxe
+http://opengameart.org/content/platformer-art-extended-tilesets
+http://opengameart.org/content/platformer-art-request-pack
+http://opengameart.org/content/kenney-16x16 (CC0, "surt")
+
+http://opengameart.org/content/a-platformer-in-the-forest
+http://opengameart.org/content/platformer-tiles-4 (CC-BY 3.0, "Buch", link to OGA)
+
+http://opengameart.org/content/minimalist-sidescroll-city (CC-BY 3.0, "Please credit Lanea Zimmerman.")
+http://opengameart.org/content/minimalist-pixel-tileset (CC-BY 3.0, "Blarget2")
+http://opengameart.org/content/dawn-of-the-gods (CC-BY 3.0, "surt")
+http://opengameart.org/content/classical-ruin-tiles (CC-BY 3.0, "surt")
+
+http://opengameart.org/content/greyscale-special-effects-%E2%80%94-various-dimensions-and-flavours 
+(CC0, "GREYSCALE SPECIAL EFFECTS — Various dimensions and flavours… by Andrew J Hamilton")
+
+http://dustyroom.com/casual-game-sfx-freebie/ (CC0)
