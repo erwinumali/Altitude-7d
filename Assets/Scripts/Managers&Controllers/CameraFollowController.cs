@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class BGCameraController : MonoBehaviour {
+public class CameraFollowController : MonoBehaviour {
 
 	public bool followX = true;
 	public bool followY = true;
