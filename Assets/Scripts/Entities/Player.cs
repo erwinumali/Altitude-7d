@@ -12,9 +12,8 @@ public class Player : Character {
 		Spawn();
 	}
 	
-	
-	protected override void FixedUpdate(){
-		_movementVector = Vector2.zero;
+	protected override void Update(){
+				_movementVector = Vector2.zero;
 		ProcessMovement();	
 		
 		CheckFront();
@@ -27,7 +26,12 @@ public class Player : Character {
 		} else {
 			_isGrounded = false;
 		}
-		ExecuteVector();	
+		ExecuteVector();
+	
+	}
+	
+	protected override void FixedUpdate(){
+	
 	}
 	
 	void ProcessMovement(){

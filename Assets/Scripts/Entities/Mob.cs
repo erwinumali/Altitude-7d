@@ -38,7 +38,14 @@ public class Mob : Character {
 		}
 	
 		if(isAlive){
-			base.Update();
+			CheckInspectorValues();
+			
+			seenFront = CheckFront();
+			seenBack = CheckBack();
+			
+			_rightGroundCheck = CheckGround (transform.localScale.x*0.45f);
+			_leftGroundCheck = CheckGround (transform.localScale.x*-0.45f);
+								
 			timer += Time.deltaTime;
 			float tickMorph = Random.Range(behaviorTick * (1.0f - behaviorTickPercentRange), behaviorTick * (1.0f + behaviorTickPercentRange));
 			if(timer > tickMorph){
@@ -54,11 +61,9 @@ public class Mob : Character {
 	}
 	
 	protected override void FixedUpdate(){
-		seenFront = CheckFront();
-		seenBack = CheckBack();
 
-		_rightGroundCheck = CheckGround (transform.localScale.x*0.45f);
-		_leftGroundCheck = CheckGround (transform.localScale.x*-0.45f);
+
+
 	}
 	
 	protected void TriggerIdleMove(bool isSeeking){

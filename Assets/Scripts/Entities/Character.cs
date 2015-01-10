@@ -43,14 +43,16 @@ public class Character : MonoBehaviour {
 	
 	protected virtual void Update(){
 		CheckInspectorValues();
-	}
-	
-	protected virtual void FixedUpdate(){
+		
 		_movementVector = Vector2.zero;
 		CheckFront();
 		CheckBack();
 		CheckGround();
 		ExecuteVector();
+	}
+	
+	protected virtual void FixedUpdate(){
+
 	}
 	
 	protected void CheckInspectorValues(){
@@ -122,14 +124,14 @@ public class Character : MonoBehaviour {
 		if(res.Length > 1){
 			foreach(RaycastHit2D col in res){
 				if(col.collider != null && col.collider != this.collider2D){
-					if(showDebugGizmos) Debug.DrawLine(transform.position, col.point, Color.red);
+					if(showDebugGizmos) Debug.DrawLine(transform.position, col.point, Color.cyan);
 					//Debug.Log ("I hit " + col.collider.gameObject.name + " at the " + side);
 				}
 			}		
 		} else {
 			if(showDebugGizmos) Debug.DrawLine(	transform.position, 
 							new Vector3(transform.position.x  + (seekDistance * _currentDirection * sideModifier), transform.position.y, transform.position.z),
-							Color.yellow); 
+							Color.green); 
 		}
 		
 		return res;
