@@ -43,8 +43,8 @@ public class Mob : Character {
 			seenFront = CheckFront();
 			seenBack = CheckBack();
 			
-			_rightGroundCheck = CheckGround (transform.localScale.x*0.45f);
-			_leftGroundCheck = CheckGround (transform.localScale.x*-0.45f);
+			_rightGroundCheck = CheckGround (collider2D.bounds.size.x * 0.45f);
+			_leftGroundCheck = CheckGround (-collider2D.bounds.size.x * 0.45f);
 								
 			timer += Time.deltaTime;
 			float tickMorph = Random.Range(behaviorTick * (1.0f - behaviorTickPercentRange), behaviorTick * (1.0f + behaviorTickPercentRange));
@@ -107,7 +107,11 @@ public class Mob : Character {
 				if(ignorePlatformEdges){
 					Move(direction, moveSpeed * seekSpeedBoostMultiplier);
 				} else {
-					Move (direction, moveSpeed);
+					if((IsPlayerSeen(seenFront) != null || IsPlayerSeen(seenBack) != null) && mobBehavior == MobBehavior.SeekAndAttack){
+						break;
+					} else {
+						Move(direction, moveSpeed);
+					}
 				}
 				ExecuteVector();
 			} else {

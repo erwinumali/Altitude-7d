@@ -19,18 +19,14 @@ public class Player : Character {
 		CheckFront();
 		CheckBack();
 		
-		_rightGroundCheck = CheckGround (transform.localScale.x*0.45f);
-		_leftGroundCheck = CheckGround (transform.localScale.x*-0.45f);
+		_rightGroundCheck = CheckGround (collider2D.bounds.size.x * 0.45f);
+		_leftGroundCheck = CheckGround (-collider2D.bounds.size.x * 0.45f);
 		if(_rightGroundCheck || _leftGroundCheck){
 			_isGrounded = true;
 		} else {
 			_isGrounded = false;
 		}
 		ExecuteVector();
-	
-	}
-	
-	protected override void FixedUpdate(){
 	
 	}
 	

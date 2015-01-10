@@ -152,7 +152,7 @@ public class Character : MonoBehaviour {
 		if(res.collider != null){
 			if(showDebugGizmos) Debug.DrawLine(castSource, res.point, Color.blue);
 			float distance = Mathf.Abs(res.point.y - transform.position.y);
-			distance -= transform.localScale.y * 0.5f;
+			distance -= this.collider2D.bounds.size.y * 0.5f;	//approx. halve the collider size
 			if(distance <= GROUND_TOL && !_isJumping){
 				retVal = true;
 			} else {
