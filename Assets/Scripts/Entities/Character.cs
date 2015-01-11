@@ -2,6 +2,7 @@
 using System.Collections;
 
 [RequireComponent (typeof (Rigidbody2D))]
+[RequireComponent (typeof (Animator))]
 
 public class Character : MonoBehaviour {
 	
@@ -35,14 +36,19 @@ public class Character : MonoBehaviour {
 	
 	protected int _currentDirection;
 	
+	protected Animator animator;
+	
 	protected virtual void Start(){
 		if(groundCheckIgnores == 0){
 			groundCheckIgnores = 1 << LayerMask.NameToLayer("Player");
 		}
+		animator = GetComponent<Animator>();
 	}
 	
 	protected virtual void Update(){
 		CheckInspectorValues();
+		animator.SetBool("isMoving", false);
+		animator.SetBool("isGrounded", _isGrounded);
 		
 		_movementVector = Vector2.zero;
 		CheckFront();
@@ -86,7 +92,14 @@ public class Character : MonoBehaviour {
 	public virtual void Move(int direction, float speed){
 		Vector2 v = _movementVector;
 		_movementVector = new Vector2(v.x + (speed * direction * Time.deltaTime), v.y);
+		
+		if(_currentDirection != direction){
+			transform.localScale = new Vector3(transform.localScale.x * -1.0f, transform.localScale.y, transform.localScale.z);
+		} 
+		animator.SetBool("isMoving", true);
+		
 		_currentDirection = direction;
+		
 	}
 	
 	public virtual void Jump(){
@@ -154,6 +167,9 @@ public class Character : MonoBehaviour {
 			float distance = Mathf.Abs(res.point.y - transform.position.y);
 			distance -= this.collider2D.bounds.size.y * 0.5f;	//approx. halve the collider size
 			if(distance <= GROUND_TOL && !_isJumping){
+				if(res.collider.gameObject.layer == LayerMask.NameToLayer("LevelSlimPlatforms")){
+					res.collider.isTrigger = false;
+				}
 				retVal = true;
 			} else {
 				retVal = false;

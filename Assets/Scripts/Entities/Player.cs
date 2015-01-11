@@ -17,8 +17,10 @@ public class Player : Character {
 	
 	protected override void Update(){
 		_movementVector = Vector2.zero;
+		animator.SetBool("isMoving", false);
+		animator.SetBool("isGrounded", _isGrounded);
 		ProcessMovement();	
-		
+	
 		CheckFront();
 		CheckBack();
 		
@@ -43,10 +45,11 @@ public class Player : Character {
 		}
 		
 		if(Input.GetAxis("Jump") > 0.0f){
-			rigidbody2D.gravityScale = reducedGravity;
 			if(_isGrounded){
 				_isJumping = true;
 				Jump();
+			} else {
+				rigidbody2D.gravityScale = reducedGravity;
 			}
 		} else {
 			rigidbody2D.gravityScale = originalGravity;
