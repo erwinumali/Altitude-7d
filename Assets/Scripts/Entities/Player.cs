@@ -6,14 +6,17 @@ using System.Collections;
 public class Player : Character {
 	
 	protected float _axis;
+	private float originalGravity;
+	private float reducedGravity = 4.0f;
 	
 	protected override void Start(){
 		base.Start();
+		originalGravity = rigidbody2D.gravityScale;
 		Spawn();
 	}
 	
 	protected override void Update(){
-				_movementVector = Vector2.zero;
+		_movementVector = Vector2.zero;
 		ProcessMovement();	
 		
 		CheckFront();
@@ -40,11 +43,13 @@ public class Player : Character {
 		}
 		
 		if(Input.GetAxis("Jump") > 0.0f){
+			rigidbody2D.gravityScale = reducedGravity;
 			if(_isGrounded){
 				_isJumping = true;
 				Jump();
 			}
 		} else {
+			rigidbody2D.gravityScale = originalGravity;
 			_isJumping = false;
 		}
 	}
