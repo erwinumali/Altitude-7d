@@ -11,7 +11,7 @@ public class Mob : Character {
 	public float seekSpeedBoostMultiplier = 1.5f; 
 	public float behaviorTick = 2.0f;
 	public float behaviorTickPercentRange = 0.1f;
-	public string mobName = "Welkin Tern";
+	public string mobName = "Solemn Simulacrum";
 	
 	private float timer = 0;
 	
@@ -58,12 +58,6 @@ public class Mob : Character {
 				}
 			}
 		}
-	}
-	
-	protected override void FixedUpdate(){
-
-
-
 	}
 	
 	protected void TriggerIdleMove(bool isSeeking){

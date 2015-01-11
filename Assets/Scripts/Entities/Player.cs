@@ -24,8 +24,8 @@ public class Player : Character {
 		CheckFront();
 		CheckBack();
 		
-		_rightGroundCheck = CheckGround (collider2D.bounds.size.x * 0.45f);
-		_leftGroundCheck = CheckGround (-collider2D.bounds.size.x * 0.45f);
+		_rightGroundCheck = CheckGround (collider2D.bounds.size.x * 0.3f);
+		_leftGroundCheck = CheckGround (-collider2D.bounds.size.x * 0.3f);
 		if(_rightGroundCheck || _leftGroundCheck){
 			_isGrounded = true;
 		} else {

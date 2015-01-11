@@ -6,7 +6,8 @@ using System.Collections;
 
 public class Character : MonoBehaviour {
 	
-	protected readonly float GROUND_TOL = 0.1f;
+	protected readonly float GROUND_TOL = 0.1f;			// ground tolerance check
+	protected readonly float JUMP_MODIFIER = 200.0f;	// arbitrary height correction factor
 	protected readonly int DIR_BACK = -1;
 	protected readonly int DIR_FRONT = 1;
 
@@ -17,12 +18,12 @@ public class Character : MonoBehaviour {
 	public float moveSpeed = 4.0f;
 	public float jumpHeight = 5.0f;
 	
-	public float frontSeekDistance = 20.0f;
+	public float frontSeekDistance = 20.0f;				// how far can the char see?
 	public float backSeekDistance = 10.0f;
 	
 	public bool isAlive = false;
 	
-	public LayerMask groundCheckIgnores = 0;
+	public LayerMask groundCheckIgnores = 0;			// placeholder; check Inspector!
 	
 	public bool showDebugGizmos = true;
 	
@@ -57,25 +58,7 @@ public class Character : MonoBehaviour {
 		ExecuteVector();
 	}
 	
-	protected virtual void FixedUpdate(){
-
-	}
-	
-	protected void CheckInspectorValues(){
-		if(HPCurrent >= HPMax){
-			HPCurrent = HPMax;
-		} else if(HPCurrent < 0){
-			HPCurrent = 0;
-		} 
-		
-		if(frontSeekDistance < 0){
-			frontSeekDistance = 0;
-		}
-		if(backSeekDistance < 0){
-			backSeekDistance = 0;
-		}
-	}
-	
+	// related actions when character spawns
 	public virtual void Spawn(){
 		_currentDirection = DIR_FRONT;
 		if(HPCurrent >= 0){
@@ -89,6 +72,9 @@ public class Character : MonoBehaviour {
 		isAlive = false;
 	}
 	
+	// GOTCHA: does not actually move the character as soon as the method exits;
+	// instead adjusts the _movementVector variable; you need to use ExecuteVector()
+	// to actually move the character
 	public virtual void Move(int direction, float speed){
 		Vector2 v = _movementVector;
 		_movementVector = new Vector2(v.x + (speed * direction * Time.deltaTime), v.y);
@@ -102,8 +88,10 @@ public class Character : MonoBehaviour {
 		
 	}
 	
+	// JUMP_MODIFIER a completely arbitrary variable to tweak jump height;
+	// refer to top of code to adjust
 	public virtual void Jump(){
-		rigidbody2D.AddForce(Vector2.up * jumpHeight * 200);
+		rigidbody2D.AddForce(Vector2.up * jumpHeight * JUMP_MODIFIER);
 	}
 	
 	protected RaycastHit2D[] CheckFront(){
@@ -114,6 +102,10 @@ public class Character : MonoBehaviour {
 		return CheckSide("back");
 	}
 	
+	// returns array of objects in range (defined by public variables) of the side
+	// specified. Direction (front/back) is relative the character's current
+	// facing direction
+	// GOTCHA: can 'see' through walls and otherwise opaque objects
 	protected RaycastHit2D[] CheckSide(string side){
 		float sideModifier = 1.0f;
 		float seekDistance = frontSeekDistance;
@@ -134,22 +126,27 @@ public class Character : MonoBehaviour {
 		
 		RaycastHit2D[] res = 
 		Physics2D.RaycastAll(transform.position, Vector2.right * _currentDirection * sideModifier, seekDistance);
+		
 		if(res.Length > 1){
 			foreach(RaycastHit2D col in res){
 				if(col.collider != null && col.collider != this.collider2D){
 					if(showDebugGizmos) Debug.DrawLine(transform.position, col.point, Color.cyan);
-					//Debug.Log ("I hit " + col.collider.gameObject.name + " at the " + side);
 				}
 			}		
 		} else {
-			if(showDebugGizmos) Debug.DrawLine(	transform.position, 
-							new Vector3(transform.position.x  + (seekDistance * _currentDirection * sideModifier), transform.position.y, transform.position.z),
-							Color.green); 
+			if(showDebugGizmos) {
+				Debug.DrawLine(	transform.position, 
+								new Vector3(transform.position.x + (seekDistance * _currentDirection * sideModifier), 
+											transform.position.y, 
+											transform.position.z),
+								Color.green);
+			}
 		}
 		
 		return res;
 	}
 	
+	// overload convenience methods
 	protected bool CheckGround(){
 		return CheckGround(0.0f, true);
 	}
@@ -158,21 +155,25 @@ public class Character : MonoBehaviour {
 		return CheckGround(centerOffset, false);
 	}
 	
+	// raycasts to ground; if hit collider isn't in ignored list, then you're standing
 	protected bool CheckGround(float centerOffset, bool alterGroundedState){
 		bool retVal = false;
 		Vector2 castSource = new Vector2(transform.position.x + centerOffset, transform.position.y);
 		RaycastHit2D res = Physics2D.Raycast(castSource, -Vector2.up, Mathf.Infinity, ~(groundCheckIgnores));
+		
 		if(res.collider != null){
 			if(showDebugGizmos) Debug.DrawLine(castSource, res.point, Color.blue);
 			float distance = Mathf.Abs(res.point.y - transform.position.y);
-			distance -= this.collider2D.bounds.size.y * 0.5f;	//approx. halve the collider size
+			distance -= this.collider2D.bounds.size.y * 0.5f;	// approx. halve the collider size
+			
 			if(distance <= GROUND_TOL && !_isJumping){
 				if(res.collider.gameObject.layer == LayerMask.NameToLayer("LevelSlimPlatforms")){
-					res.collider.isTrigger = false;
+					res.collider.isTrigger = false;				// partial support for half platforms
 				}
 				retVal = true;
-			} else {
-				retVal = false;
+				
+			} else { 
+				retVal = false; 
 			}
 			
 		} else {
@@ -186,10 +187,27 @@ public class Character : MonoBehaviour {
 		return retVal;
 	}
 	
+	// execute movement vector; must be called after all move-related methods
 	protected virtual void ExecuteVector(){
 		Vector2 v = transform.position;
 		transform.position = new Vector2(v.x + _movementVector.x, v.y + _movementVector.y);
-		//rigidbody2D.AddForce(new Vector2(_movementVector.x, _movementVector.y) * 100.0f);
+	}
+	
+	// checks if inspector values are valid; can be called every start of 
+	// update, but not really mandatory. Used to avoid editor errors
+	protected void CheckInspectorValues(){
+		if(HPCurrent >= HPMax){
+			HPCurrent = HPMax;
+		} else if(HPCurrent < 0){
+			HPCurrent = 0;
+		} 
+		
+		if(frontSeekDistance < 0){
+			frontSeekDistance = 0;
+		}
+		if(backSeekDistance < 0){
+			backSeekDistance = 0;
+		}
 	}
 	
 }
