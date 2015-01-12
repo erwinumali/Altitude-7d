@@ -10,6 +10,10 @@ public class Room : MonoBehaviour {
 	public bool hasLeftAccess;
 	public bool hasRightAccess;
 	
+	public Room topRoom;
+	public Room leftRoom;
+	public Room rightRoom;
+	
 	void Start () {
 	
 	}
