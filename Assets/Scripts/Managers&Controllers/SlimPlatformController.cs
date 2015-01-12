@@ -34,10 +34,12 @@ public class SlimPlatformController : MonoBehaviour {
 			RaycastHit2D hit = Physics2D.Raycast(left, Vector2.right, Vector2.Distance(collider2D.bounds.min, collider2D.bounds.max), surfaceCheckAcknowledges);
 			Debug.DrawLine(left, right, Color.white);
 			
-			Debug.Log(hit.point);
+			//Debug.Log(hit.point);
 			
 			if(hit.collider == null){
-				collider2D.isTrigger = true;
+				if(!collider2D.isTrigger) {
+					collider2D.isTrigger = true;
+				}
 			} else {
 				if(hit.collider.tag == "Player" && playerScript.GetVAxis() < 0.0f){
 					Physics2D.IgnoreCollision(player.collider2D, this.collider2D);
