@@ -46,10 +46,9 @@ public class Character : MonoBehaviour {
 		animator = GetComponent<Animator>();
 	}
 	
+	// default behavior; preferably can be overridden
 	protected virtual void Update(){
 		CheckInspectorValues();
-		animator.SetBool("isMoving", false);
-		animator.SetBool("isGrounded", _isGrounded);
 		
 		_movementVector = Vector2.zero;
 		CheckFront();
@@ -133,7 +132,7 @@ public class Character : MonoBehaviour {
 					if(showDebugGizmos) Debug.DrawLine(transform.position, col.point, Color.cyan);
 				}
 			}		
-		} else {
+		} else { // else draw a line gizmo for reference purposes
 			if(showDebugGizmos) {
 				Debug.DrawLine(	transform.position, 
 								new Vector3(transform.position.x + (seekDistance * _currentDirection * sideModifier), 
