@@ -5,7 +5,9 @@ using System.Collections;
 
 public class Player : Character {
 	
-	protected float _axis;
+	protected float _hAxis;
+	protected float _vAxis;
+	
 	private float originalGravity;
 	private float reducedGravity = 4.0f;
 	
@@ -36,15 +38,16 @@ public class Player : Character {
 	}
 	
 	void ProcessMovement(){
-		_axis = Input.GetAxis("Horizontal");
+		_hAxis = Input.GetAxis("Horizontal");
+		_vAxis = Input.GetAxis("Vertical");
 		
-		if(_axis > 0.0f){
+		if(_hAxis > 0.0f){
 			Move(DIR_FRONT, moveSpeed);
-		} else if(_axis < 0.0f){
+		} else if(_hAxis < 0.0f){
 			Move(DIR_BACK, moveSpeed);
 		}
 		
-		if(Input.GetAxis("Jump") > 0.0f){
+		if(Input.GetAxis("Jump") > 0.0f || _vAxis > 0.0f){
 			if(_isGrounded){
 				_isJumping = true;
 				Jump();
@@ -55,6 +58,12 @@ public class Player : Character {
 			rigidbody2D.gravityScale = originalGravity;
 			_isJumping = false;
 		}
+		
+		
+	}
+	
+	public float GetVAxis(){
+		return _vAxis;
 	}
 	
 }
