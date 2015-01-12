@@ -165,10 +165,11 @@ public class Character : MonoBehaviour {
 			float distance = Mathf.Abs(res.point.y - transform.position.y);
 			distance -= this.collider2D.bounds.size.y * 0.5f;	// approx. halve the collider size
 			
+			if(res.collider.gameObject.layer == LayerMask.NameToLayer("LevelSlimPlatforms")){
+				res.collider.isTrigger = false;				// partial support for half platforms
+			}
+			
 			if(distance <= GROUND_TOL && !_isJumping){
-				if(res.collider.gameObject.layer == LayerMask.NameToLayer("LevelSlimPlatforms")){
-					res.collider.isTrigger = false;				// partial support for half platforms
-				}
 				retVal = true;
 				
 			} else { 
