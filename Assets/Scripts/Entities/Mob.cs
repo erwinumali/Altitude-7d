@@ -24,18 +24,7 @@ public class Mob : Character {
 	}
 	
 	protected override void Update(){
-		if(behaviorTickPercentRange < 0){
-			behaviorTickPercentRange = 0;
-		}
-		if(behaviorTickPercentRange > 1.0f){
-			behaviorTickPercentRange = 1.0f;
-		}
-		if(seekSpeedBoostMultiplier < 0){
-			seekSpeedBoostMultiplier = 0;
-		}
-		if(seekSpeedBoostMultiplier > 20.0f){
-			seekSpeedBoostMultiplier = 20.0f;
-		}
+		CheckInspectorValues();
 	
 		if(isAlive){
 			CheckInspectorValues();
@@ -57,8 +46,11 @@ public class Mob : Character {
 				
 				}
 			}
+		} else {
+			
 		}
 	}
+	
 	
 	protected void TriggerIdleMove(bool isSeeking){
 		int direction = Random.Range(DIR_BACK,DIR_FRONT + 1);
@@ -67,6 +59,7 @@ public class Mob : Character {
 		GameObject goBack = IsPlayerSeen(seenBack);
 		int chaseDirection = 0;
 		if((goFront != null || goBack != null) && isSeeking){
+			animator.SetBool("seenPlayer", true);
 			if(goFront != null){
 				chaseDirection = DIR_FRONT;
 			} else if(goBack != null){
@@ -75,6 +68,7 @@ public class Mob : Character {
 			StartCoroutine(MoveRoutine(chaseDirection, true));
 			timer = 0;
 		} else if(direction == DIR_BACK && _leftGroundCheck || direction == DIR_FRONT && _rightGroundCheck){
+			animator.SetBool("seenPlayer", false);
 			StartCoroutine(MoveRoutine (direction));
 			timer = 0;
 		}
@@ -95,7 +89,7 @@ public class Mob : Character {
 	
 	IEnumerator MoveRoutine(int direction, bool ignorePlatformEdges){
 		float time = 0;
-		while(time < 1.0f){
+		while(time < 1.0f && isAlive){
 			_movementVector = Vector2.zero;
 			if(((direction == DIR_BACK && _leftGroundCheck) || (direction == DIR_FRONT && _rightGroundCheck)) || ignorePlatformEdges){
 				if(ignorePlatformEdges){
@@ -116,4 +110,19 @@ public class Mob : Character {
 		}	
 	}
 	
+	protected override void CheckInspectorValues(){
+		base.CheckInspectorValues();
+		if(behaviorTickPercentRange < 0){
+			behaviorTickPercentRange = 0;
+		}
+		if(behaviorTickPercentRange > 1.0f){
+			behaviorTickPercentRange = 1.0f;
+		}
+		if(seekSpeedBoostMultiplier < 0){
+			seekSpeedBoostMultiplier = 0;
+		}
+		if(seekSpeedBoostMultiplier > 20.0f){
+			seekSpeedBoostMultiplier = 20.0f;
+		}
+	}
 }

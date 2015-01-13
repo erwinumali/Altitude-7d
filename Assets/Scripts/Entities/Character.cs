@@ -2,6 +2,7 @@
 using System.Collections;
 
 [RequireComponent (typeof (Rigidbody2D))]
+[RequireComponent (typeof (SpriteRenderer))]
 [RequireComponent (typeof (Animator))]
 
 public class Character : MonoBehaviour {
@@ -14,6 +15,7 @@ public class Character : MonoBehaviour {
 	public int HPMax = 100;
 	public int HPCurrent;
 	public int armor = 1;
+	public float stunTime = 0.3f;
 	
 	public float moveSpeed = 4.0f;
 	public float jumpHeight = 5.0f;
@@ -41,12 +43,14 @@ public class Character : MonoBehaviour {
 	
 	protected int _currentDirection;
 	
+	protected SpriteRenderer _sr;
 	protected Animator animator;
 	
 	protected virtual void Start(){
 		if(groundCheckIgnores == 0){
 			groundCheckIgnores = 1 << LayerMask.NameToLayer("Player");
 		}
+		_sr = GetComponent<SpriteRenderer>();
 		animator = GetComponent<Animator>();
 	}
 	
@@ -74,6 +78,8 @@ public class Character : MonoBehaviour {
 	public virtual void Die(){
 		HPCurrent = 0;
 		isAlive = false;
+		animator.SetBool("isDead", true);
+		_sr.color = Color.black;
 	}
 	
 	// GOTCHA: does not actually move the character as soon as the method exits;
@@ -93,8 +99,8 @@ public class Character : MonoBehaviour {
 	}
 	
 	public virtual void Damage(int value){
-	
-	
+		HPCurrent -= value;
+		CheckIfDead();
 	}
 	
 	// JUMP_MODIFIER a completely arbitrary variable to tweak jump height;
@@ -102,6 +108,13 @@ public class Character : MonoBehaviour {
 	public virtual void Jump(){
 		rigidbody2D.velocity = new Vector2(rigidbody2D.velocity.x, 0);
 		rigidbody2D.AddForce(Vector2.up * jumpHeight * JUMP_MODIFIER);
+	}
+	
+	protected void CheckIfDead(){
+		if(HPCurrent <= 0){
+			HPCurrent = 0;
+			Die ();
+		} 
 	}
 	
 	protected RaycastHit2D[] CheckFront(){
@@ -215,7 +228,7 @@ public class Character : MonoBehaviour {
 	
 	// checks if inspector values are valid; can be called every start of 
 	// update, but not really mandatory. Used to avoid editor errors
-	protected void CheckInspectorValues(){
+	protected virtual void CheckInspectorValues(){
 		if(HPCurrent >= HPMax){
 			HPCurrent = HPMax;
 		} else if(HPCurrent < 0){

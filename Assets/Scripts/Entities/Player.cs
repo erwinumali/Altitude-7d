@@ -2,10 +2,10 @@
 using System.Collections;
 
 [RequireComponent (typeof (BoxCollider2D))]
-[RequireComponent (typeof (SpriteRenderer))]
 
 public class Player : Character {
 	
+	public int fireDamage = 34;
 	public float fireRange = 5.0f;
 	
 	public LayerMask shotOnlyAffects = 0;
@@ -21,7 +21,6 @@ public class Player : Character {
 	private float _originalGravity;
 	private float _reducedGravity = 4.0f;
 	
-	private SpriteRenderer _sr;
 	private Animator _beamAnimator;
 	private Color _origChargedColor;
 	
@@ -34,7 +33,6 @@ public class Player : Character {
 			shotOnlyAffects = 1 << LayerMask.NameToLayer("MobTopVulnerable");
 		}
 		
-		_sr = GetComponent<SpriteRenderer>();
 		_beamAnimator = transform.GetChild(0).GetComponent<Animator>();
 		_origChargedColor = _sr.color;
 		
@@ -112,7 +110,12 @@ public class Player : Character {
 	
 	void Fire(){
 		if(!_needsToCharge){
-			//shotHit = Physics2D.RaycastAll(transform.position, Vector2.right * _currentDirection, fireRange,
+			shotHit = Physics2D.RaycastAll(transform.position, Vector2.right * _currentDirection, fireRange, shotOnlyAffects);
+			
+			foreach(RaycastHit2D hit in shotHit){
+				hit.collider.GetComponent<Character>().Damage(fireDamage);
+			}
+			
 			_beamAnimator.SetBool("isFiring", true);
 			_hasFired = true;
 			_needsToCharge = true; 
