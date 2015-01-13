@@ -10,15 +10,24 @@ public class Room : MonoBehaviour {
 	public bool hasLeftAccess;
 	public bool hasRightAccess;
 	
-	public Room topRoom;
-	public Room leftRoom;
-	public Room rightRoom;
+	public enum RoomLocation { Center, Left, Right };
+	
+	public GameObject topRoom;
+	public GameObject leftRoom;
+	public GameObject rightRoom;
+	
+	public GameObject topAnchor;
+	public GameObject bottomAnchor;
+	public GameObject leftAnchor;
+	public GameObject rightAnchor;
 	
 	void Start () {
-	
+		
 	}
 	
 	void Update () {
 	
 	}
+	
+	
 }

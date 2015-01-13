@@ -30,6 +30,8 @@ public class Character : MonoBehaviour {
 	protected bool _isGrounded = false;
 	protected bool _isJumping = false;
 	
+	protected bool _isDamaged = false;
+	
 	protected bool _rightGroundCheck = false;
 	protected bool _leftGroundCheck = false;
 	
@@ -85,6 +87,11 @@ public class Character : MonoBehaviour {
 		
 		_currentDirection = direction;
 		
+	}
+	
+	public virtual void Damaged(int value){
+	
+	
 	}
 	
 	// JUMP_MODIFIER a completely arbitrary variable to tweak jump height;
