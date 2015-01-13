@@ -98,6 +98,7 @@ public class RoomGenerator : MonoBehaviour {
 				case Direction.East:
 					currentRoom.leftRoom = newRoomObject;
 					newRoom.rightRoom = currentRoomObject;
+					yCorrection = 0;
 					break;
 				case Direction.North:
 					currentRoom.topRoom = newRoomObject;
@@ -109,9 +110,9 @@ public class RoomGenerator : MonoBehaviour {
 															newRoomObject.transform.position.y + yCorrection);
 			
 			
-			//if(newRoomObject.transform.position.y != currentRoomObject.transform.position.y){
+			if(newRoomObject.transform.position.y != currentRoomObject.transform.position.y){
 				currentHeight += 1;
-			//}
+			}
 		
 		
 			if(currentHeight > towerHeight){
