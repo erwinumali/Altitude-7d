@@ -67,9 +67,9 @@ public class RoomGenerator : MonoBehaviour {
 		while(true){
 			randDirection = PickRandomDirection(true);
 				
-			while((randDirection == Direction.West  && !currentRoom.hasLeftAccess && currentRoom.leftRoom == null)  ||
-			      (randDirection == Direction.East  && !currentRoom.hasRightAccess && currentRoom.rightRoom == null) ||
-			      (randDirection == Direction.North && !currentRoom.hasTopAccess && currentRoom.topRoom == null) ){
+			while((randDirection == Direction.West  && (!currentRoom.hasLeftAccess || currentRoom.leftRoom != null))  ||
+			      (randDirection == Direction.East  && (!currentRoom.hasRightAccess || currentRoom.rightRoom != null)) ||
+			      (randDirection == Direction.North && (!currentRoom.hasTopAccess || currentRoom.topRoom != null)) ){
 			      	randDirection = PickRandomDirection(true);
 			}
 			

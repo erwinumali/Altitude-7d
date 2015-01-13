@@ -34,6 +34,8 @@ public class Player : Character {
 			_isGrounded = false;
 		}
 		ExecuteVector();
+		
+		LimitYVelocity();
 	
 	}
 	

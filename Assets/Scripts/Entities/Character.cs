@@ -18,6 +18,8 @@ public class Character : MonoBehaviour {
 	public float moveSpeed = 4.0f;
 	public float jumpHeight = 5.0f;
 	
+	public float maxYVelocity = 50.0f;
+	
 	public float frontSeekDistance = 20.0f;				// how far can the char see?
 	public float backSeekDistance = 10.0f;
 	
@@ -57,6 +59,7 @@ public class Character : MonoBehaviour {
 		CheckBack();
 		CheckGround();
 		ExecuteVector();
+	
 	}
 	
 	// related actions when character spawns
@@ -89,7 +92,7 @@ public class Character : MonoBehaviour {
 		
 	}
 	
-	public virtual void Damaged(int value){
+	public virtual void Damage(int value){
 	
 	
 	}
@@ -97,6 +100,7 @@ public class Character : MonoBehaviour {
 	// JUMP_MODIFIER a completely arbitrary variable to tweak jump height;
 	// refer to top of code to adjust
 	public virtual void Jump(){
+		rigidbody2D.velocity = new Vector2(rigidbody2D.velocity.x, 0);
 		rigidbody2D.AddForce(Vector2.up * jumpHeight * JUMP_MODIFIER);
 	}
 	
@@ -198,6 +202,15 @@ public class Character : MonoBehaviour {
 	protected virtual void ExecuteVector(){
 		Vector2 v = transform.position;
 		transform.position = new Vector2(v.x + _movementVector.x, v.y + _movementVector.y);
+	}
+	
+	protected virtual void LimitYVelocity(){
+		//Debug.Log(rigidbody2D.velocity);
+		if(rigidbody2D.velocity.y > maxYVelocity){
+			rigidbody2D.velocity = new Vector2(rigidbody2D.velocity.x, maxYVelocity);
+		} else if(rigidbody2D.velocity.y < -maxYVelocity){
+			rigidbody2D.velocity = new Vector2(rigidbody2D.velocity.x, -maxYVelocity);
+		}
 	}
 	
 	// checks if inspector values are valid; can be called every start of 
