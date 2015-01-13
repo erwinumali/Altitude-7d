@@ -72,21 +72,13 @@ public class RoomGenerator : MonoBehaviour {
 			      (randDirection == Direction.North && (!currentRoom.hasTopAccess || currentRoom.topRoom != null)) ){
 			      	randDirection = PickRandomDirection(true);
 			}
+			Debug.Log("current room piece is " + currentRoomObject.name + ", going " + randDirection);
 			
 			newRoomObject = GetNewRoom(GetOppositeDirection(randDirection), PickAdjacentRoomLocation(currentRoom.roomLocation, randDirection));
 			
 			Transform rmAnchor = currentRoomObject.transform;
 			Vector3 rmAnchorV = rmAnchor.position;
-			
-			//bool[] isSameAxis = SameAxis(currentRoom.roomLocation, newRoom.roomLocation); 
-			/*
-			if(isSameAxis[0]){
-				xCorrection = (roomWidth - 1) * tileSize;
-			} else {
-				yCorrection = (roomHeight - 2) * tileSize;
-			}
-			*/
-			
+
 			newRoomObject = (GameObject) GameObject.Instantiate(newRoomObject, 
 																new Vector3(rmAnchorV.x, rmAnchorV.y, rmAnchorV.z),
 																Quaternion.identity); 
@@ -95,17 +87,17 @@ public class RoomGenerator : MonoBehaviour {
 			float xCorrection = (roomWidth) * tileSize * 2;
 			float yCorrection = (roomHeight) * tileSize * 2;
 			
-			// attach the rooms (one way linked list) and calculate position correction
+			// attach the rooms (linked list) and calculate position correction
 			switch(randDirection){
 				case Direction.West:
-					currentRoom.leftRoom = newRoomObject;
-					newRoom.rightRoom = currentRoomObject;
-					yCorrection = 0;
-					break;
-				case Direction.East:
 					currentRoom.rightRoom = newRoomObject;
 					newRoom.leftRoom = currentRoomObject;
-					xCorrection -= xCorrection;
+					yCorrection = 0;
+					xCorrection = -xCorrection;
+					break;
+				case Direction.East:
+					currentRoom.leftRoom = newRoomObject;
+					newRoom.rightRoom = currentRoomObject;
 					break;
 				case Direction.North:
 					currentRoom.topRoom = newRoomObject;
@@ -250,22 +242,5 @@ public class RoomGenerator : MonoBehaviour {
 		return ret;
 	
 	}
-	
-	/*
-	// bool [-1 < x < 1, -1 < y < 1]
-	private int[] SameAxis(Room.RoomLocation a, Room.RoomLocation b){
-		int[] retXY = new int[2];
-		
-		if(a == b){
-			retXY[0] = 0;
-			retXY[1] = 1;
-		} else if(a == Room.room ){
-			retXY[0] = true;
-			retXY[1] = false;
-		}
-		
-		return retXY;
-	}
-	*/
 	
 }
