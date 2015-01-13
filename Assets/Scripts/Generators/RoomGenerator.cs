@@ -9,7 +9,7 @@ public class RoomGenerator : MonoBehaviour {
 	public GameObject[] rightRoomPrefabs = new GameObject[3];
 	public GameObject[] centerRoomPrefabs = new GameObject[3];
 	
-	public float tileSize = 16.0f;
+	public float tileSize = 0.32f;
 
 	public int roomWidth = 25;
 	public int roomHeight = 36;
@@ -57,39 +57,85 @@ public class RoomGenerator : MonoBehaviour {
 		Transform snt = startNode.transform;
 		Vector3 sntp = snt.position;
 		Debug.Log(startNode.name + " position = " + sntp);
-		currentRoomObject = (GameObject)GameObject.Instantiate(currentRoomObject, new Vector3(sntp.x, sntp.y, sntp.z), Quaternion.identity);
+		currentRoomObject = (GameObject)GameObject.Instantiate(	currentRoomObject, 
+																new Vector3(sntp.x, sntp.y + (roomHeight-2) * tileSize, sntp.z),
+																Quaternion.identity);
 		currentRoom = currentRoomObject.GetComponent<Room>();
 		currentHeight += 1;
+		
 		
 		while(true){
 			randDirection = PickRandomDirection(true);
 				
-			while((randDirection == Direction.West  && !currentRoom.hasLeftAccess)  ||
-			      (randDirection == Direction.East  && !currentRoom.hasRightAccess) ||
-			      (randDirection == Direction.North && !currentRoom.hasTopAccess)   ||
-			      (randDirection == Direction.South && !currentRoom.hasBottomAccess) ){
+			while((randDirection == Direction.West  && !currentRoom.hasLeftAccess && currentRoom.leftRoom == null)  ||
+			      (randDirection == Direction.East  && !currentRoom.hasRightAccess && currentRoom.rightRoom == null) ||
+			      (randDirection == Direction.North && !currentRoom.hasTopAccess && currentRoom.topRoom == null) ){
 			      	randDirection = PickRandomDirection(true);
 			}
 			
 			newRoomObject = GetNewRoom(GetOppositeDirection(randDirection), PickAdjacentRoomLocation(currentRoom.roomLocation, randDirection));
-			newRoom = newRoomObject.GetComponent<Room>();
 			
-			Transform rmAnchor = GetRoomAnchorAt(newRoom, randDirection).transform;
+			Transform rmAnchor = currentRoomObject.transform;
 			Vector3 rmAnchorV = rmAnchor.position;
 			
-			GameObject.Instantiate(newRoomObject, rmAnchorV, Quaternion.identity); 
-			
-			if(newRoomObject.transform.position.y != currentRoomObject.transform.position.y){
-				currentHeight += 1;
+			//bool[] isSameAxis = SameAxis(currentRoom.roomLocation, newRoom.roomLocation); 
+			/*
+			if(isSameAxis[0]){
+				xCorrection = (roomWidth - 1) * tileSize;
+			} else {
+				yCorrection = (roomHeight - 2) * tileSize;
 			}
+			*/
+			
+			newRoomObject = (GameObject) GameObject.Instantiate(newRoomObject, 
+																new Vector3(rmAnchorV.x, rmAnchorV.y, rmAnchorV.z),
+																Quaternion.identity); 
+			newRoom = newRoomObject.GetComponent<Room>();
+			
+			float xCorrection = (roomWidth) * tileSize * 2;
+			float yCorrection = (roomHeight) * tileSize * 2;
+			
+			// attach the rooms (one way linked list) and calculate position correction
+			switch(randDirection){
+				case Direction.West:
+					currentRoom.leftRoom = newRoomObject;
+					newRoom.rightRoom = currentRoomObject;
+					yCorrection = 0;
+					break;
+				case Direction.East:
+					currentRoom.rightRoom = newRoomObject;
+					newRoom.leftRoom = currentRoomObject;
+					xCorrection -= xCorrection;
+					break;
+				case Direction.North:
+					currentRoom.topRoom = newRoomObject;
+					xCorrection = 0;
+					break;
+			}
+
+			newRoomObject.transform.position = new Vector2(	newRoomObject.transform.position.x + xCorrection,
+															newRoomObject.transform.position.y + yCorrection);
+			
+			
+			//if(newRoomObject.transform.position.y != currentRoomObject.transform.position.y){
+				currentHeight += 1;
+			//}
 		
 		
 			if(currentHeight > towerHeight){
 				break;
-			}
+			} 
+			
+			currentRoomObject = newRoomObject;
+			currentRoom = currentRoomObject.GetComponent<Room>();
+		
 		}
 		
 	
+	}
+	
+	private GameObject PickRandom(GameObject[] list){
+		return list[Random.Range(0, list.Length)];	
 	}
 	
 	private GameObject GetNewRoom(Direction openSide, Room.RoomLocation atLocation){
@@ -122,10 +168,6 @@ public class RoomGenerator : MonoBehaviour {
 		}
 
 		return ret;
-	}
-	
-	private GameObject PickRandom(GameObject[] list){
-		return list[Random.Range(0, list.Length)];	
 	}
 	
 	private GameObject GetRoomAnchorAt(Room room, Direction dir){
@@ -208,5 +250,22 @@ public class RoomGenerator : MonoBehaviour {
 		return ret;
 	
 	}
+	
+	/*
+	// bool [-1 < x < 1, -1 < y < 1]
+	private int[] SameAxis(Room.RoomLocation a, Room.RoomLocation b){
+		int[] retXY = new int[2];
+		
+		if(a == b){
+			retXY[0] = 0;
+			retXY[1] = 1;
+		} else if(a == Room.room ){
+			retXY[0] = true;
+			retXY[1] = false;
+		}
+		
+		return retXY;
+	}
+	*/
 	
 }
