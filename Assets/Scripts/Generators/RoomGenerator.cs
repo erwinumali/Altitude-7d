@@ -20,7 +20,12 @@ public class RoomGenerator : MonoBehaviour {
 	
 	private int currentHeight;
 	private GameObject startNode;
-	private GameObject currentRoom;
+	
+	private GameObject currentRoomObject;
+	private Room currentRoom;
+	
+	private GameObject newRoomObject;
+	private Room newRoom;
 	
 	void Start () {
 		GenerateRooms();
@@ -34,15 +39,56 @@ public class RoomGenerator : MonoBehaviour {
 	
 	void GenerateRooms(){
 		currentHeight = 0;
-		startNode = startNodes[1];
-		// assume center
+		int randIndex = Random.Range(0,3);
+		Direction randDirection = Direction.North;
 		
-		currentRoom = PickRandom(centerRoomPrefabs);
+		startNode = startNodes[randIndex];
+		
+		GameObject[] selectedArray = null;
+		if(randIndex == 0){
+			selectedArray = leftRoomPrefabs;
+		} else if(randIndex == 1){
+			selectedArray = centerRoomPrefabs;
+		} else if(randIndex == 2){
+			selectedArray = rightRoomPrefabs;
+		}
+		currentRoomObject = PickRandom(selectedArray);
 		
 		Transform snt = startNode.transform;
 		Vector3 sntp = snt.position;
 		Debug.Log(startNode.name + " position = " + sntp);
-		GameObject.Instantiate(currentRoom, new Vector3(sntp.x, sntp.y, sntp.z), Quaternion.identity);
+		currentRoomObject = (GameObject)GameObject.Instantiate(currentRoomObject, new Vector3(sntp.x, sntp.y, sntp.z), Quaternion.identity);
+		currentRoom = currentRoomObject.GetComponent<Room>();
+		currentHeight += 1;
+		
+		while(true){
+			randDirection = PickRandomDirection(true);
+				
+			while((randDirection == Direction.West  && !currentRoom.hasLeftAccess)  ||
+			      (randDirection == Direction.East  && !currentRoom.hasRightAccess) ||
+			      (randDirection == Direction.North && !currentRoom.hasTopAccess)   ||
+			      (randDirection == Direction.South && !currentRoom.hasBottomAccess) ){
+			      	randDirection = PickRandomDirection(true);
+			}
+			
+			newRoomObject = GetNewRoom(GetOppositeDirection(randDirection), PickAdjacentRoomLocation(currentRoom.roomLocation, randDirection));
+			newRoom = newRoomObject.GetComponent<Room>();
+			
+			Transform rmAnchor = GetRoomAnchorAt(newRoom, randDirection).transform;
+			Vector3 rmAnchorV = rmAnchor.position;
+			
+			GameObject.Instantiate(newRoomObject, rmAnchorV, Quaternion.identity); 
+			
+			if(newRoomObject.transform.position.y != currentRoomObject.transform.position.y){
+				currentHeight += 1;
+			}
+		
+		
+			if(currentHeight > towerHeight){
+				break;
+			}
+		}
+		
 	
 	}
 	
@@ -82,5 +128,85 @@ public class RoomGenerator : MonoBehaviour {
 		return list[Random.Range(0, list.Length)];	
 	}
 	
+	private GameObject GetRoomAnchorAt(Room room, Direction dir){
+		GameObject ret = null;
+		
+		switch(dir){
+			case Direction.East:
+				ret = room.rightAnchor;
+				break;
+			case Direction.West:
+				ret = room.leftAnchor;
+				break;
+			case Direction.North:
+				ret = room.topAnchor;
+				break;
+			case Direction.South:
+				ret = room.bottomAnchor;
+				break;	
+		}
+		
+		return ret;
+	
+	}
+	
+	private Direction GetOppositeDirection(Direction dir){
+		Direction ret = Direction.North;
+		
+		if(dir == Direction.East) 		ret = Direction.West;
+		else if(dir == Direction.West) 	ret = Direction.East;
+		else if(dir == Direction.North) ret = Direction.South;
+		else if(dir == Direction.South) ret = Direction.North;
+		
+		return ret;
+	}
+	
+	private Room.RoomLocation PickAdjacentRoomLocation(Room.RoomLocation loc, Direction dir){
+		Room.RoomLocation ret = Room.RoomLocation.Center;
+		
+		switch(loc){
+			case Room.RoomLocation.Center:
+				if(dir == Direction.East) 		ret = Room.RoomLocation.Right;
+				else if(dir == Direction.West) 	ret = Room.RoomLocation.Left;
+				else 							ret = loc;
+				break;
+			case Room.RoomLocation.Left:
+			case Room.RoomLocation.Right:
+				if(dir == Direction.North || dir == Direction.South) ret = loc;
+				else ret = Room.RoomLocation.Center;
+				break;
+		}
+		
+		return ret;
+	}
+	
+	private Direction PickRandomDirection(bool exceptBottom){
+		int maxVal;
+		int rand;
+		Direction ret = Direction.North;
+		
+		if(exceptBottom) maxVal = 3;
+		else maxVal = 4;
+		
+		rand = Random.Range(0, maxVal);
+		
+		switch(rand){
+			case 0:
+				ret = Direction.West;
+				break;
+			case 1:
+				ret = Direction.North;
+				break;
+			case 2:
+				ret = Direction.East;
+				break;
+			case 3:
+				ret = Direction.South;
+				break;
+		}
+		
+		return ret;
+	
+	}
 	
 }
