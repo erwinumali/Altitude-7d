@@ -21,7 +21,7 @@ public class SlimPlatformController : MonoBehaviour {
 		if(player == null){
 			Debug.LogError("GameObject with tag Player not found!");
 		} else {
-			playerScript = player.GetComponent<Player>();
+			playerScript = player.GetComponentInChildren<Player>();
 		}
 		
 		collider2D.isTrigger = true;

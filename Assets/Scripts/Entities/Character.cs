@@ -144,13 +144,13 @@ public class Character : MonoBehaviour {
 				}
 			}		
 		} else { // else draw a line gizmo for reference purposes
-			if(showDebugGizmos) {
+			/*if(showDebugGizmos) {
 				Debug.DrawLine(	transform.position, 
 								new Vector3(transform.position.x + (seekDistance * _currentDirection * sideModifier), 
 											transform.position.y, 
 											transform.position.z),
 								Color.green);
-			}
+			}*/
 		}
 		
 		return res;
