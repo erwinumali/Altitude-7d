@@ -16,6 +16,8 @@ public class RoomGenerator : MonoBehaviour {
 
 	public int towerHeight = 30;
 	
+	public GameObject mobPrefab;
+	
 	private enum Direction { North, South, East, West };
 	
 	private int currentHeight;
@@ -72,7 +74,7 @@ public class RoomGenerator : MonoBehaviour {
 			      (randDirection == Direction.North && (!currentRoom.hasTopAccess || currentRoom.topRoom != null)) ){
 			      	randDirection = PickRandomDirection(true);
 			}
-			Debug.Log("current room piece is " + currentRoomObject.name + ", going " + randDirection);
+			//Debug.Log("current room piece is " + currentRoomObject.name + ", going " + randDirection);
 			
 			newRoomObject = GetNewRoom(GetOppositeDirection(randDirection), PickAdjacentRoomLocation(currentRoom.roomLocation, randDirection));
 			
@@ -124,7 +126,12 @@ public class RoomGenerator : MonoBehaviour {
 		
 		}
 		
-	
+		GameObject[] spawnPoints = GameObject.FindGameObjectsWithTag("MobSpawnPoint");
+		
+		foreach(GameObject go in spawnPoints){
+			GameObject.Instantiate(mobPrefab, go.transform.position, Quaternion.identity);
+		}
+		
 	}
 	
 	private GameObject PickRandom(GameObject[] list){

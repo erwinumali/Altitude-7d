@@ -40,25 +40,30 @@ public class Player : Character {
 	}
 	
 	protected override void Update(){
-		_movementVector = Vector2.zero;
-		animator.SetBool("isMoving", false);
-
-		ProcessMovement();	
+		if(isAlive){
+			_movementVector = Vector2.zero;
+			animator.SetBool("isMoving", false);
 	
-		CheckFront();
-		CheckBack();
+			ProcessMovement();	
 		
-		_rightGroundCheck = CheckGround (collider2D.bounds.size.x * 0.3f);
-		_leftGroundCheck = CheckGround (-collider2D.bounds.size.x * 0.3f);
-		if(_rightGroundCheck || _leftGroundCheck){
-			_isGrounded = true;
+			CheckFront();
+			CheckBack();
+			
+			_rightGroundCheck = CheckGround (collider2D.bounds.size.x * 0.3f);
+			_leftGroundCheck = CheckGround (-collider2D.bounds.size.x * 0.3f);
+			if(_rightGroundCheck || _leftGroundCheck){
+				_isGrounded = true;
+			} else {
+				_isGrounded = false;
+			}
+			ExecuteVector();
+			LimitYVelocity();
+			
+			animator.SetBool("isGrounded", _isGrounded);
+			CheckIfDead();
 		} else {
-			_isGrounded = false;
+			animator.SetBool("isMoving", false);
 		}
-		ExecuteVector();
-		LimitYVelocity();
-		
-		animator.SetBool("isGrounded", _isGrounded);
 		
 	}
 	
@@ -113,6 +118,7 @@ public class Player : Character {
 			shotHit = Physics2D.RaycastAll(transform.position, Vector2.right * _currentDirection, fireRange, shotOnlyAffects);
 			
 			foreach(RaycastHit2D hit in shotHit){
+				Debug.Log("Damaged " + hit.collider.gameObject.name + "!");
 				hit.collider.GetComponent<Character>().Damage(fireDamage);
 			}
 			

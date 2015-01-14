@@ -100,6 +100,7 @@ public class Character : MonoBehaviour {
 	
 	public virtual void Damage(int value){
 		HPCurrent -= value;
+		if(HPCurrent <= 0) HPCurrent = 0;
 		CheckIfDead();
 	}
 	
