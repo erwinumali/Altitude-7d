@@ -33,12 +33,6 @@ public class RoomGenerator : MonoBehaviour {
 		GenerateRooms();
 	}
 	
-	void Update () {
-	
-	}
-	
-
-	
 	void GenerateRooms(){
 		currentHeight = 0;
 		int randIndex = Random.Range(0,3);
@@ -69,12 +63,12 @@ public class RoomGenerator : MonoBehaviour {
 		while(true){
 			randDirection = PickRandomDirection(true);
 				
-			while((randDirection == Direction.West  && (!currentRoom.hasLeftAccess || currentRoom.leftRoom != null))  ||
-			      (randDirection == Direction.East  && (!currentRoom.hasRightAccess || currentRoom.rightRoom != null)) ||
+			while((randDirection == Direction.West  && (!currentRoom.hasLeftAccess || currentRoom.rightRoom != null))  ||
+			      (randDirection == Direction.East  && (!currentRoom.hasRightAccess || currentRoom.leftRoom != null)) ||
 			      (randDirection == Direction.North && (!currentRoom.hasTopAccess || currentRoom.topRoom != null)) ){
 			      	randDirection = PickRandomDirection(true);
 			}
-			//Debug.Log("current room piece is " + currentRoomObject.name + ", going " + randDirection);
+			Debug.Log("current room piece is " + currentRoomObject.name + ", going " + randDirection);
 			
 			newRoomObject = GetNewRoom(GetOppositeDirection(randDirection), PickAdjacentRoomLocation(currentRoom.roomLocation, randDirection));
 			

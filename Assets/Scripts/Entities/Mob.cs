@@ -8,6 +8,7 @@ public class Mob : Character {
 	public enum MobBehavior { IdleStill, IdleMove, SeekAndAttack, FlySeek }
 	
 	public MobBehavior mobBehavior = MobBehavior.IdleMove;
+	public bool ignoreOwnLayerCollision = true;
 	public float seekSpeedBoostMultiplier = 1.5f; 
 	public float behaviorTick = 2.0f;
 	public float behaviorTickPercentRange = 0.1f;
@@ -21,6 +22,10 @@ public class Mob : Character {
 	protected override void Start(){
 		base.Start();
 		Spawn();
+		
+		if(ignoreOwnLayerCollision){
+			Physics2D.IgnoreLayerCollision(gameObject.layer, gameObject.layer);
+		}
 	}
 	
 	protected override void Update(){
@@ -32,8 +37,8 @@ public class Mob : Character {
 			seenFront = CheckFront();
 			seenBack = CheckBack();
 			
-			_rightGroundCheck = CheckGround (collider2D.bounds.size.x * 0.45f);
-			_leftGroundCheck = CheckGround (-collider2D.bounds.size.x * 0.45f);
+			_rightGroundCheck = CheckGround (collider2D.bounds.size.x * 0.5f);
+			_leftGroundCheck = CheckGround (-collider2D.bounds.size.x * 0.5f);
 								
 			timer += Time.deltaTime;
 			float tickMorph = Random.Range(behaviorTick * (1.0f - behaviorTickPercentRange), behaviorTick * (1.0f + behaviorTickPercentRange));
@@ -50,7 +55,6 @@ public class Mob : Character {
 			
 		}
 	}
-	
 	
 	protected void TriggerIdleMove(bool isSeeking){
 		int direction = Random.Range(DIR_BACK,DIR_FRONT + 1);

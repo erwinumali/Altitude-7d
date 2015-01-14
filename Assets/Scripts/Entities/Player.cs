@@ -10,10 +10,13 @@ public class Player : Character {
 	
 	public LayerMask shotOnlyAffects = 0;
 	
+	public float resetDuration = 1.5f;
+	
 	protected float _hAxis;
 	protected float _vAxis;
 	protected float _fireAxis;	// hehe
 	protected float _chargeAxis;
+	protected float _resetAxis;
 	
 	protected bool _needsToCharge = false;
 	protected bool _hasFired = false;
@@ -25,6 +28,8 @@ public class Player : Character {
 	private Color _origChargedColor;
 	
 	private RaycastHit2D[] shotHit;
+	
+	private float _resetTimer;
 	
 	protected override void Start(){
 		base.Start();
@@ -78,6 +83,17 @@ public class Player : Character {
 		_vAxis = Input.GetAxis("Vertical");
 		_fireAxis = Input.GetAxis("Fire");
 		_chargeAxis = Input.GetAxis("Charge");
+		_resetAxis = Input.GetAxis("Reset");
+		
+		Debug.Log(_resetTimer);
+		if(_resetAxis > 0.0f){
+			_resetTimer += Time.deltaTime;
+			if(_resetTimer >= resetDuration){
+				Application.LoadLevel(0);
+			}
+		} else {
+			_resetTimer = 0;
+		}
 		
 		if(_hAxis > 0.0f){
 			Move(DIR_FRONT, moveSpeed);
