@@ -12,12 +12,17 @@ public class Mob : Character {
 	public float seekSpeedBoostMultiplier = 1.5f; 
 	public float behaviorTick = 2.0f;
 	public float behaviorTickPercentRange = 0.1f;
+	
+	public int scoreValue = 100;
+	
 	public string mobName = "Solemn Simulacrum";
 	
 	private float timer = 0;
 	
 	private RaycastHit2D[] seenFront;
 	private RaycastHit2D[] seenBack;
+	
+
 	
 	protected override void Start(){
 		base.Start();
@@ -54,6 +59,11 @@ public class Mob : Character {
 		} else {
 			
 		}
+	}
+	
+	public override void Die(){
+		base.Die();
+		_scoreManagerRef.AddScore(scoreValue);
 	}
 	
 	protected void TriggerIdleMove(bool isSeeking){

@@ -4,6 +4,7 @@ using System.Collections;
 [RequireComponent (typeof (Rigidbody2D))]
 [RequireComponent (typeof (SpriteRenderer))]
 [RequireComponent (typeof (Animator))]
+[RequireComponent (typeof (AudioSource))]
 
 public class Character : MonoBehaviour {
 	
@@ -46,12 +47,16 @@ public class Character : MonoBehaviour {
 	protected SpriteRenderer _sr;
 	protected Animator animator;
 	
+	protected ScoreManager _scoreManagerRef;
+	
 	protected virtual void Start(){
 		if(groundCheckIgnores == 0){
 			groundCheckIgnores = 1 << LayerMask.NameToLayer("Player");
 		}
 		_sr = GetComponent<SpriteRenderer>();
 		animator = GetComponent<Animator>();
+		
+		_scoreManagerRef = GameObject.Find("_ScoreManager").GetComponent<ScoreManager>();
 	}
 	
 	// default behavior; preferably can be overridden
@@ -69,7 +74,7 @@ public class Character : MonoBehaviour {
 	// related actions when character spawns
 	public virtual void Spawn(){
 		_currentDirection = DIR_FRONT;
-		if(HPCurrent >= 0){
+		if(HPCurrent <= 0){
 			HPCurrent = HPMax;
 		}
 		isAlive = true;
@@ -78,7 +83,10 @@ public class Character : MonoBehaviour {
 	public virtual void Die(){
 		HPCurrent = 0;
 		isAlive = false;
+		
 		animator.SetBool("isDead", true);
+		audio.pitch *= 0.1f;
+		audio.Play();
 		_sr.color = Color.black;
 	}
 	
@@ -99,9 +107,27 @@ public class Character : MonoBehaviour {
 	}
 	
 	public virtual void Damage(int value){
-		HPCurrent -= value;
-		if(HPCurrent <= 0) HPCurrent = 0;
-		CheckIfDead();
+		if(isAlive){
+			HPCurrent -= value;
+			
+			if(HPCurrent <= 0) { 
+				HPCurrent = 0;
+			} else {
+				audio.Play();
+			}
+			
+			CheckIfDead();
+		}
+	}
+	
+	public virtual void Heal(int value){
+		if(isAlive){
+			HPCurrent += value;
+			
+			if(HPCurrent >= HPMax){
+				HPCurrent = HPMax;
+			}
+		}
 	}
 	
 	// JUMP_MODIFIER a completely arbitrary variable to tweak jump height;

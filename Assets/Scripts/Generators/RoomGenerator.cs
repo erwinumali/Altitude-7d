@@ -16,7 +16,12 @@ public class RoomGenerator : MonoBehaviour {
 
 	public int towerHeight = 30;
 	
-	public GameObject mobPrefab;
+	public float spawnRatio = 0.9f;
+	public float pickupSpawnModifierRatio = 0.2f;
+	
+	public GameObject[] spawnablePrefabs;
+	
+	public GameObject goalPrefab;
 	
 	private enum Direction { North, South, East, West };
 	
@@ -120,12 +125,32 @@ public class RoomGenerator : MonoBehaviour {
 		
 		}
 		
+		// last tasks
+		spawnEntitiesAndPickups();
+		GameObject.Instantiate(goalPrefab, newRoom.topAnchor.transform.position, Quaternion.identity);
+		
+	}
+	
+	void spawnEntitiesAndPickups(){
 		GameObject[] spawnPoints = GameObject.FindGameObjectsWithTag("MobSpawnPoint");
-		
 		foreach(GameObject go in spawnPoints){
-			GameObject.Instantiate(mobPrefab, go.transform.position, Quaternion.identity);
+			GameObject go2;
+			if(Random.Range(0.0f, 1.0f) <= spawnRatio){
+				while(true){
+					go2 = PickRandom(spawnablePrefabs);
+					if(go2.tag == "Pickup"){
+						if(Random.Range(0.0f, 1.0f) > pickupSpawnModifierRatio){
+							go2 = PickRandom(spawnablePrefabs);
+						} else {
+							break;
+						}
+					} else {
+						break;
+					}
+				}
+				GameObject.Instantiate(go2, go.transform.position, Quaternion.identity);
+			}
 		}
-		
 	}
 	
 	private GameObject PickRandom(GameObject[] list){

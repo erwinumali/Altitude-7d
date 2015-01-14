@@ -10,7 +10,7 @@ public class Player : Character {
 	
 	public LayerMask shotOnlyAffects = 0;
 	
-	public float resetDuration = 1.5f;
+	public float resetDuration = 1.0f;
 	
 	protected float _hAxis;
 	protected float _vAxis;
@@ -45,6 +45,8 @@ public class Player : Character {
 	}
 	
 	protected override void Update(){
+		CheckForReset();
+		
 		if(isAlive){
 			_movementVector = Vector2.zero;
 			animator.SetBool("isMoving", false);
@@ -78,14 +80,9 @@ public class Player : Character {
 	
 	}
 	
-	void ProcessMovement(){
-		_hAxis = Input.GetAxis("Horizontal");
-		_vAxis = Input.GetAxis("Vertical");
-		_fireAxis = Input.GetAxis("Fire");
-		_chargeAxis = Input.GetAxis("Charge");
+	void CheckForReset(){
 		_resetAxis = Input.GetAxis("Reset");
-		
-		Debug.Log(_resetTimer);
+	
 		if(_resetAxis > 0.0f){
 			_resetTimer += Time.deltaTime;
 			if(_resetTimer >= resetDuration){
@@ -94,7 +91,14 @@ public class Player : Character {
 		} else {
 			_resetTimer = 0;
 		}
-		
+	}
+	
+	void ProcessMovement(){
+		_hAxis = Input.GetAxis("Horizontal");
+		_vAxis = Input.GetAxis("Vertical");
+		_fireAxis = Input.GetAxis("Fire");
+		_chargeAxis = Input.GetAxis("Charge");
+			
 		if(_hAxis > 0.0f){
 			Move(DIR_FRONT, moveSpeed);
 		} else if(_hAxis < 0.0f){
@@ -138,6 +142,7 @@ public class Player : Character {
 				hit.collider.GetComponent<Character>().Damage(fireDamage);
 			}
 			
+			_beamAnimator.audio.Play();
 			_beamAnimator.SetBool("isFiring", true);
 			_hasFired = true;
 			_needsToCharge = true; 
